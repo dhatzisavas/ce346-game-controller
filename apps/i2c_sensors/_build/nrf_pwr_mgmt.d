@@ -25,7 +25,7 @@ _build/nrf_pwr_mgmt.o: \
  /opt/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/include/strings.h \
  /opt/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/include/sys/string.h \
  ../../nrf52x-base//make/config/nrf52833/config/sdk_config.h \
- /home/dimitri/Classes/ce346/f22-lab6-dimitri-jackson/software/boards/microbit_v2/./app_config.h \
+ /home/dimitri/Classes/ce346/ce346-game-controller/boards/microbit_v2/./app_config.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nordic_common.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/compiler_abstraction.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/sdk_os.h \

@@ -73,6 +73,14 @@ int haptic_resume(){
     return 0;
 }
 
+//use app timer
+int haptic_timed(uint32_t ms){
+    //setup timer here, haptic_stop should be the interrupt handler - need anything else?
+
+    haptic_start();
+    return 0;
+}
+
 static int i2c_write_by_bit(uint8_t i2c_addr, uint8_t reg_addr, uint8_t data_val, uint8_t bit_start, uint8_t bits_len){
     const uint8_t cur_val = i2c_reg_read(i2c_addr, reg_addr);
     uint8_t new_val = cur_val;

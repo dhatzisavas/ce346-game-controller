@@ -110,3 +110,7 @@ int haptic_stop();
 
 // Used to resume vibrating after haptic_stop;
 int haptic_resume();
+
+// Starts the haptic driver, running for time ms in milliseconds
+// If already running, will continue until the timer elapses
+int haptic_timed(uint32_t ms);
