@@ -10,12 +10,14 @@
 #include "microbit_v2.h"
 
 void red_callback(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t idk){
-    printf("Yellow button pressed!\n");
+    // printf("Yellow button pressed!\n");
+    uint8_t val = 100;
+    printf(val);
     nrf_gpio_pin_clear(pin);
 }
 
 int main(){
-    printf("start\n");
+    // printf("start\n");
     if(init_button(EDGE_P13, red_callback)){
         return -1;
     }

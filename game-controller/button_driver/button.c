@@ -9,9 +9,9 @@ int init_button(uint32_t pin_number, void callback(nrfx_gpiote_pin_t, nrf_gpiote
     //configure
     nrfx_gpiote_in_config_t in_config = NRFX_GPIOTE_CONFIG_IN_SENSE_LOTOHI(true);
     uint32_t success = nrfx_gpiote_in_init(pin_number, &in_config, callback);
-    printf("Exit code: 0x%x. Should be NRFX_SUCCESS (0x0).\n", success);
+    // printf("Exit code: 0x%x. Should be NRFX_SUCCESS (0x0).\n", success);
     if (success != NRFX_SUCCESS) {
-        printf("could not set up interrupt\n");
+        // printf("could not set up interrupt\n");
         return -1;
     }
 

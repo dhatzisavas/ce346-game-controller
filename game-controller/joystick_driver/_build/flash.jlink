@@ -1,0 +1,5 @@
+r
+loadfile _build/joystick_driver_sdk16_blank.hex 
+r
+g
+exit
