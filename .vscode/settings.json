@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "nrf_twi_mngr.h": "c"
+        "nrf_twi_mngr.h": "c",
+        "i2c_lib.h": "c"
     }
 }

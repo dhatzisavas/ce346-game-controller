@@ -460,7 +460,7 @@ static ret_code_t timer_req_schedule(app_timer_req_type_t type, app_timer_t * p_
 }
 
 ret_code_t app_timer_init(void)
-{
+{   
     ret_code_t err_code;
     drv_rtc_config_t config = {
         .prescaler          = APP_TIMER_CONFIG_RTC_FREQUENCY,

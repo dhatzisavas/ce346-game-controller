@@ -945,15 +945,11 @@ ret_code_t app_timer_init(void)
 #if APP_TIMER_WITH_PROFILER
     m_max_user_op_queue_utilization   = 0;
 #endif
-
     NVIC_ClearPendingIRQ(SWI_IRQn);
     NVIC_SetPriority(SWI_IRQn, SWI_IRQ_PRI);
     NVIC_EnableIRQ(SWI_IRQn);
-
     rtc1_init(APP_TIMER_CONFIG_RTC_FREQUENCY);
-
     m_ticks_latest = rtc1_counter_get();
-
     return NRF_SUCCESS;
 }
 
