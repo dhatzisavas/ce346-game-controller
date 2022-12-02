@@ -10,9 +10,13 @@ int main(){
   i2c_config.sda = EDGE_P20;
   i2c_config.frequency = NRF_TWIM_FREQ_100K;
   i2c_config.interrupt_priority = 0;
+  printf("init twi manager\n");
   nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
+  printf("init app timer library\n");
   app_timer_init();
-  if(haptic_init(&twi_mngr_instance, &timer)){
+  i2c_init(twi_mngr_instance);
+  printf("init done\n");
+  if(haptic_init(&timer)){
     printf("Failed!\n");
     return 0;
   }
@@ -32,5 +36,6 @@ int main(){
   nrf_delay_ms(2000);
   haptic_stop();
   nrf_delay_ms(1000);
+  printf("timed\n");
   haptic_timed(1000);
 }
