@@ -1,6 +1,7 @@
 #include "haptic.h"
 
 NRF_TWI_MNGR_DEF(twi_mngr_instance, 1, 0);
+_APP_TIMER_DEF(timer);
 
 int main(){
   // Initialize I2C peripheral and driver
@@ -10,7 +11,8 @@ int main(){
   i2c_config.frequency = NRF_TWIM_FREQ_100K;
   i2c_config.interrupt_priority = 0;
   nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
-  if(haptic_init(&twi_mngr_instance)){
+  app_timer_init();
+  if(haptic_init(&twi_mngr_instance, &timer)){
     printf("Failed!\n");
     return 0;
   }
@@ -24,11 +26,11 @@ int main(){
   }
   nrf_delay_ms(5000);
   printf("stopping\n");
-  if(haptic_stop()){
-    printf("stopping failure!\n");
-  }
+  haptic_stop();
   nrf_delay_ms(1000);
   haptic_resume();
   nrf_delay_ms(2000);
   haptic_stop();
+  nrf_delay_ms(1000);
+  haptic_timed(1000);
 }

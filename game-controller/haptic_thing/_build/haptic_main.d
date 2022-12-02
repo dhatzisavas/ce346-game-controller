@@ -33,12 +33,10 @@ _build/haptic_main.o: haptic_main.c haptic.h \
  /opt/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/include/machine/types.h \
  /opt/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/include/sys/stdio.h \
  /opt/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/include/math.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/delay/nrf_delay.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/nrfx.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/integration/nrfx/nrfx_config.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/timer/app_timer.h \
  ../../nrf52x-base//make/config/nrf52833/config/sdk_config.h \
  /home/dimitri/Classes/ce346/ce346-game-controller/boards/microbit_v2/./app_config.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/drivers/nrfx_common.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_error.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/nrf.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/nrf52833.h \
  ../../nrf52x-base//lib/CMSIS_5/CMSIS/Core/Include/core_cm4.h \
@@ -52,6 +50,17 @@ _build/haptic_main.o: haptic_main.c haptic.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/nrf52_to_nrf52833.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/nrf51_to_nrf52.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/compiler_abstraction.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/sdk_errors.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/drivers_nrf/nrf_soc_nosd/nrf_error.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nordic_common.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_error_weak.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_util.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/compiler_abstraction.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nordic_common.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/delay/nrf_delay.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/nrfx.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/integration/nrfx/nrfx_config.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/drivers/nrfx_common.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/nrf_peripherals.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/nrf52833_peripherals.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/integration/nrfx/nrfx_glue.h \
@@ -59,16 +68,9 @@ _build/haptic_main.o: haptic_main.c haptic.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/soc/nrfx_irqs.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/soc/nrfx_irqs_nrf52833.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nrf_assert.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_util.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/mdk/compiler_abstraction.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nordic_common.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nordic_common.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_util_platform.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/nrf_assert.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_error.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/sdk_errors.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/drivers_nrf/nrf_soc_nosd/nrf_error.h \
- ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/app_error_weak.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/soc/nrfx_coredep.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/soc/nrfx_atomic.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/util/sdk_errors.h \
@@ -80,7 +82,10 @@ _build/haptic_main.o: haptic_main.c haptic.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/drivers/include/nrfx_gpiote.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/hal/nrf_gpiote.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/hal/nrf_gpio.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/drivers/include/nrfx_timer.h \
+ ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/hal/nrf_timer.h \
  /home/dimitri/Classes/ce346/ce346-game-controller/boards/microbit_v2/./microbit_v2.h \
+ i2c_lib.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/components/libraries/twi_mngr/nrf_twi_mngr.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/integration/nrfx/legacy/nrf_drv_twi.h \
  ../../nrf52x-base//sdk/nrf5_sdk_16.0.0/modules/nrfx/drivers/include/nrfx_twim.h \

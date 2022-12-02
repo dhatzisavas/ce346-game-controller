@@ -4,13 +4,15 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "app_timer.h"
 #include "nrf_delay.h"
 #include "nrfx_saadc.h"
 #include "nrf_gpio.h"
 #include "nrfx_gpiote.h"
 
+#include "nrfx_timer.h"
 #include "microbit_v2.h"
-#include "nrf_twi_mngr.h"
+#include "i2c_lib.h"
 
 /*
   Driver features inspired by https://github.com/sparkfun/SparkFun_Qwiic_Haptic_Driver_DA7280_Arduino_Library,
@@ -90,14 +92,9 @@ typedef struct h_config {
     float lraFreq;
 } h_config_t;
 
-//applies a mask -- only modifying selectedbits
-//bit start - most significant bit of data
-//len - number of bits in data
-static int i2c_write_by_bit(uint8_t i2c_addr, uint8_t reg_addr, uint8_t data_val, uint8_t bit_start, uint8_t bits_len);
-
 // returns 0 if succesfully reads WHOAMI register
 // returns -1 otherwise
-int haptic_init(const nrf_twi_mngr_t* i2c);
+int haptic_init(const nrf_twi_mngr_t* i2c, const app_timer_id_t *created_timer);
 
 // configures haptic driver
 int haptic_config();
@@ -106,7 +103,7 @@ int haptic_config();
 int haptic_start();
 
 // Stops the haptic motor
-int haptic_stop();
+void haptic_stop();
 
 // Used to resume vibrating after haptic_stop;
 int haptic_resume();
