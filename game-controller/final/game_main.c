@@ -13,13 +13,13 @@ int buttons[] = {EDGE_P13};
 
 uint8_t dev_values[6] = {0};
 
-#define OUTPUT_VALS(x); \ 
+#define OUTPUT_VALS(x) \ 
     putchar(dev_values[0]); \
     putchar(dev_values[1]); \
     putchar(dev_values[2]); \
     putchar(dev_values[3]); \
     putchar(dev_values[4]); \
-    putchar(dev_values[5]);
+    putchar(dev_values[5])
 
 int main() {
     //init once
@@ -40,12 +40,13 @@ int main() {
     haptic_init(&haptic_timer);
     joystick_init(&haptic_timer, false);
     while(true){
-        char in = getchar();
-        if(in == 'a'){
+        // char in = getchar();
+        // if(in == 'a'){
             dev_values[0] = read_joystick_horizontal_low();
             dev_values[1] = read_joystick_vertical_low();
             dev_values[2] = read_button(buttons[0]);
-        }
+        // }
         OUTPUT_VALS(dev_vals);
+        nrf_delay_ms(100);
     }
 }
