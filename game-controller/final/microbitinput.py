@@ -96,17 +96,23 @@ class MicrobitPolling:
         self.print = True
         self.time = print_time
         self.microbit = serial.Serial('/dev/ttyACM0', 38400)
+        self.microbitval = self.readVal()
+        self.start = 0
+
+    def readVal(self):
+        return byteToIntArr(self.microbit.read(self.size))
 
     def readingValues(self):
         while (self.poll):
-            self.microbitval = byteToIntArr(self.microbit.read(self.size))
+            self.microbitval = self.readVal()
+            self.start = findStart(self.microbitval, self.start)
 
     def printingValues(self):
         while (self.print):
             time.sleep(self.time)
             print("start of values")
-            for i in self.microbitval:
-                print(i)
+            for i in range(self.size):
+                print(accessArray(self.microbitval, self.start, i)) 
             print("end of values")
 
     def stopPolling(self):
@@ -137,8 +143,10 @@ class MicrobitPolling:
 # constantly polls, periodically prints. Parallelism helps manage acquiring and interpreting inputs and using them at once
 def parallelTesting():
     MB = MicrobitPolling(6)
+    print("making threads")
     read_mb_thread = threading.Thread(target=MB.readingValues)
     print_mb_thread = threading.Thread(target=MB.printingValues)
+    print("starting")
     read_mb_thread.start()
     print_mb_thread.start()
     read_mb_thread.join()
