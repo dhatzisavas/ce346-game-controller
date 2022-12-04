@@ -32,14 +32,16 @@ int main() {
     nrf_twi_mngr_init(&twi_mngr_instance, &i2c_config);
     i2c_init(twi_mngr_instance);
     app_timer_init();
-
+    printf("all overall init done\n");
     //device init
     for(int i = 0; i < num_buttons; i++){
         init_button(buttons[i], NULL); //todo: add callback
     }
     haptic_init(&haptic_timer);
     joystick_init(&haptic_timer, false);
-    while(true){
+    printf("devices inited\n");
+    while(1){
+        // printf("looping\n");
         // char in = getchar();
         // if(in == 'a'){
             dev_values[0] = read_joystick_horizontal_low();
@@ -48,5 +50,7 @@ int main() {
         // }
         OUTPUT_VALS(dev_vals);
         nrf_delay_ms(100);
+        // printf("working\n");
     }
+    printf("exiting\n");
 }

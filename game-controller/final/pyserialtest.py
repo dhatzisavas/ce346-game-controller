@@ -1,4 +1,4 @@
-import serial
+import serial, time, threading  
 
 #most significant byte = index 0
 def getByte(byteStrInt: int, byteNum: int, byteLen: int) -> int:
@@ -59,17 +59,46 @@ def accessArray(vals: list, start: int, ind: int):
 # vals = byteToIntArr(string)
 # for i in vals:
 #     print(i)
+def microbitTest():
+    microbit = serial.Serial('/dev/ttyACM0', 38400)
+    print(microbit.name)
+    start = 0
+    while(True):
+        raw = microbit.read(6)
+        print("message start")
+        rawToInts = byteToIntArr(raw)
+        start = findStart(rawToInts, start)
+        for i in range(6):
+            print('Ordered: {0:3d}\t Original:{1:3d}'.format(accessArray(rawToInts, start, i), rawToInts[i]))
+        print("message end")
+        # time.sleep(.005) #this takes too long
+        # maybe insert a delay here
+        # or a way to trigger a software interrupt if the byte value is valid/makes sense
 
-microbit = serial.Serial('/dev/ttyACM0', 38400)
-print(microbit.name)
-start = 0
-while(True):
-    raw = microbit.read(6)
-    print("message start")
-    rawToInts = byteToIntArr(raw)
-    start = findStart(rawToInts, start)
-    for i in range(6):
-        print(accessArray(rawToInts, start, i))
-    print("message end")
-    # maybe insert a delay here
-    # or a way to trigger a software interrupt if the byte value is valid/makes sense
+global microbitval
+
+def readingValues():
+    microbit = serial.Serial('/dev/ttyACM0', 38400)
+    while(True):
+        global microbitval 
+        microbitval = byteToIntArr(microbit.read(6))
+
+def printingValues():
+    while(True):
+        time.sleep(.25)
+        print("start of values")
+        for i in microbitval:
+            print(i)
+        print("end of values")
+
+#constantly polls, periodically prints. Parallelism helps manage acquiring and interpreting inputs and using them at once
+def parallelTesting():
+    read_mb_thread = threading.Thread(target=readingValues)
+    print_mb_thread = threading.Thread(target=printingValues)
+    read_mb_thread.start()
+    print_mb_thread.start()
+    read_mb_thread.join()
+    print_mb_thread.join()
+    print("You shouldn't have reached this point, but the functions have both ended")
+
+parallelTesting()
