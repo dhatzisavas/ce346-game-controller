@@ -192,4 +192,3 @@ def parallelTesting():
     print_mb_thread.join()
     print("You shouldn't have reached this point, but the functions have both ended")
 
-parallelTesting()
