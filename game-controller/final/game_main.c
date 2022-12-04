@@ -25,7 +25,7 @@ bool ready = true;
     putchar(dev_values[5])
 
 static volatile void read_in(){
-    char c = getChar();
+    char c = getchar();
     if(c && ready){
         drive = true;
         ready = false;
@@ -33,6 +33,12 @@ static volatile void read_in(){
     else if (ready && !drive){
         drive = false;
     }
+}
+
+void haptic_easy_time(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t polarity){
+    printf("HERE\n");
+    haptic_timed(500);
+    printf("DONE\n");
 }
 
 int main() {
@@ -54,29 +60,33 @@ int main() {
     
     // init individual devices
     for (int i = 0; i < num_buttons; i++) {
-        init_button(buttons[i], NULL);  // todo: add callback
+        init_button(buttons[i], haptic_easy_time);  // todo: add callback
     }
     printf("buttons done\n");
-    haptic_init(&haptic_timer);
+    haptic_init(haptic_timer);
     printf("haptic done\n");
-    joystick_init(&joystick_timer, false);
+    joystick_init(joystick_timer, false);
     printf("devices inited\n");
     haptic_config();
-
+    haptic_start();
+    haptic_stop();
+    haptic_timed(1000);
+    nrf_delay_ms(1000);
     //loop for reading and sending values
     while (1) {
-        // printf("looping\n");
-        char in = getchar();
-        if(in == 0xFF){
-            haptic_timed(500);
-        }
+        printf("looping\n");
+        // char in = getchar();
+        // printf("0x%x\n", in);
+        // if(in == 0xCE){
+        //     haptic_timed(500);
+        // }
         dev_values[0] = read_joystick_horizontal_low();
         dev_values[1] = read_joystick_vertical_low();
         dev_values[2] = read_button(buttons[0]);
         dev_values[3] = read_button(buttons[1]);
         dev_values[4] = read_button(buttons[2]);
         dev_values[5] = read_button(buttons[3]);
-        OUTPUT_VALS(dev_vals);
+        // OUTPUT_VALS(dev_vals);
         nrf_delay_ms(100);
         // printf("working\n");
     }
