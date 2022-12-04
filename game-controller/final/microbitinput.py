@@ -103,15 +103,24 @@ class MicrobitPolling:
         self.print = True
         self.time = print_time
         self.microbit = serial.Serial('/dev/ttyACM0', 38400)
-        self.microbitval = self.readVal()
+        self.microbitval = self.__readVal()
         self.start = 0
 
-    def readVal(self):
+    def __readVal(self):
         return byteToIntArr(self.microbit.read(self.size))
+
+    def getSortedVals(self):
+        start = self.start
+        sortedLst = []
+        i = self.start
+        while i < start + self.size:
+            sortedLst.append(self.microbitval[i % self.size])
+            i+=1
+        return sortedLst
 
     def readingValues(self):
         while (self.poll):
-            self.microbitval = self.readVal()
+            self.microbitval = self.__readVal()
             self.start = findStart(self.microbitval, self.start)
         self.poll = True
 
@@ -150,17 +159,37 @@ class MicrobitPolling:
 #         print("end of values")
 
 # constantly polls, periodically prints. Parallelism helps manage acquiring and interpreting inputs and using them at once
+# def parallelTesting():
+#     MB = MicrobitPolling(6)
+#     print("making threads")
+#     read_mb_thread = threading.Thread(target=MB.readingValues)
+#     print_mb_thread = threading.Thread(target=MB.printingValues)
+#     print("starting")
+#     read_mb_thread.start()
+#     print_mb_thread.start()
+#     read_mb_thread.join()
+#     print_mb_thread.join()
+#     print("You shouldn't have reached this point, but the functions have both ended")
+
+def printv(microbit):
+    while(True):
+        lst = microbit.getSortedVals()
+        print("start")
+        for i in lst:
+            print(i)
+        print("end")
+        time.sleep(.05)
+
 def parallelTesting():
     MB = MicrobitPolling(6)
     print("making threads")
     read_mb_thread = threading.Thread(target=MB.readingValues)
-    print_mb_thread = threading.Thread(target=MB.printingValues)
+    print_mb_thread = threading.Thread(target=printv, args=(MB,))
     print("starting")
     read_mb_thread.start()
     print_mb_thread.start()
     read_mb_thread.join()
     print_mb_thread.join()
     print("You shouldn't have reached this point, but the functions have both ended")
-
 
 parallelTesting()
