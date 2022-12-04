@@ -1,6 +1,10 @@
-import serial, time, threading  
+import serial
+import time
+import threading
 
-#most significant byte = index 0
+# most significant byte = index 0
+
+
 def getByte(byteStrInt: int, byteNum: int, byteLen: int) -> int:
     shift_size = 8 * (byteLen - byteNum - 1)
     mask = 0xFF
@@ -14,6 +18,8 @@ def getByte(byteStrInt: int, byteNum: int, byteLen: int) -> int:
 
 # array will be in same byte order as bytes were inserted. Big-endian byte ordering.
 # e.g. byte b'\x01\x02' => [0x01, 0x02]
+
+
 def byteToIntArr(byte: bytes) -> list:
     int_arr = []
     i = 0
@@ -25,29 +31,32 @@ def byteToIntArr(byte: bytes) -> list:
         i += 1
     return int_arr
 
-#ensures input is valid as much as possible
-#button values should either be 0 (unpressed) or 1 (pressed)
+# ensures input is valid as much as possible
+# button values should either be 0 (unpressed) or 1 (pressed)
+
+
 def validateInputArr(vals: list) -> bool:
-    #no checks for first 2 values - anything in range is fine
+    # no checks for first 2 values - anything in range is fine
     for i in range(2, len(vals)):
         if vals[i] != 0 or vals[i] != 1:
-            return False;
-    return True;
+            return False
+    return True
 
-def findStart(val, old = 0):
+
+def findStart(val, old=0):
     map = []
     for i in range(len(val)):
         if val[i] > 1:
             map.append(i)
-    #if there are not exactly 2 elements identified as joystick, returns last known start val
+    # if there are not exactly 2 elements identified as joystick, returns last known start val
     if len(map) != 2:
         return old
-    #are the sequential?
+    # are the sequential?
     if map[1] - map[0] == 1:
         return map[0]
     else:
         return map[1]
-            
+
 
 def accessArray(vals: list, start: int, ind: int):
     realInd = (ind + start) % len(vals)
@@ -59,46 +68,82 @@ def accessArray(vals: list, start: int, ind: int):
 # vals = byteToIntArr(string)
 # for i in vals:
 #     print(i)
+
+
 def microbitTest():
     microbit = serial.Serial('/dev/ttyACM0', 38400)
     print(microbit.name)
     start = 0
-    while(True):
+    while (True):
         raw = microbit.read(6)
         print("message start")
         rawToInts = byteToIntArr(raw)
         start = findStart(rawToInts, start)
         for i in range(6):
-            print('Ordered: {0:3d}\t Original:{1:3d}'.format(accessArray(rawToInts, start, i), rawToInts[i]))
+            print('Ordered: {0:3d}\t Original:{1:3d}'.format(
+                accessArray(rawToInts, start, i), rawToInts[i]))
         print("message end")
         # time.sleep(.005) #this takes too long
         # maybe insert a delay here
         # or a way to trigger a software interrupt if the byte value is valid/makes sense
 
-global microbitval
 
-def readingValues():
-    microbit = serial.Serial('/dev/ttyACM0', 38400)
-    while(True):
-        global microbitval 
-        microbitval = byteToIntArr(microbit.read(6))
+class MicrobitPolling:
 
-def printingValues():
-    while(True):
-        time.sleep(.25)
-        print("start of values")
-        for i in microbitval:
-            print(i)
-        print("end of values")
+    def __init__(self, message_size, print_time=0.25):
+        self.size = message_size
+        self.poll = True
+        self.print = True
+        self.time = print_time
+        self.microbit = serial.Serial('/dev/ttyACM0', 38400)
 
-#constantly polls, periodically prints. Parallelism helps manage acquiring and interpreting inputs and using them at once
+    def readingValues(self):
+        while (self.poll):
+            self.microbitval = byteToIntArr(self.microbit.read(self.size))
+
+    def printingValues(self):
+        while (self.print):
+            time.sleep(self.time)
+            print("start of values")
+            for i in self.microbitval:
+                print(i)
+            print("end of values")
+
+    def stopPolling(self):
+        self.poll = False
+
+    def stopPrinting(self):
+        self.print = False
+
+
+# global microbitval
+
+
+# def readingValues():
+#     microbit = serial.Serial('/dev/ttyACM0', 38400)
+#     while (True):
+#         global microbitval
+#         microbitval = byteToIntArr(microbit.read(6))
+
+
+# def printingValues():
+#     while (True):
+#         time.sleep(.25)
+#         print("start of values")
+#         for i in microbitval:
+#             print(i)
+#         print("end of values")
+
+# constantly polls, periodically prints. Parallelism helps manage acquiring and interpreting inputs and using them at once
 def parallelTesting():
-    read_mb_thread = threading.Thread(target=readingValues)
-    print_mb_thread = threading.Thread(target=printingValues)
+    MB = MicrobitPolling(6)
+    read_mb_thread = threading.Thread(target=MB.readingValues)
+    print_mb_thread = threading.Thread(target=MB.printingValues)
     read_mb_thread.start()
     print_mb_thread.start()
     read_mb_thread.join()
     print_mb_thread.join()
     print("You shouldn't have reached this point, but the functions have both ended")
+
 
 parallelTesting()
