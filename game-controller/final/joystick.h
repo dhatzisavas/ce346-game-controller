@@ -58,7 +58,7 @@ enum REGS {
     I2C_ADDR
 };
 
-int joystick_init(const app_timer_id_t *created_timer, bool high_accuracy_mode);
+int joystick_init(const app_timer_id_t created_timer, bool high_accuracy_mode);
 
 joystick_vals_t read_joystick();
 

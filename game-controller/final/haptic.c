@@ -6,27 +6,27 @@ bool first = true;
 
 app_timer_id_t timer;
 
-//returns 0 if whoami register matches expected value
+// returns 0 if whoami register matches expected value
 //-1 otherwise
-//what do we need to do for init? Turn on device? Config will be separate step
-int haptic_init(const app_timer_id_t *created_timer){
+// what do we need to do for init? Turn on device? Config will be separate step
+int haptic_init(const app_timer_id_t created_timer) {
     // printf("hapticinit starting\n");
-    timer = *created_timer;
-    //checking whoami register
-    // printf("reading reg\n");
+    timer = created_timer;
+    // checking whoami register
+    //  printf("reading reg\n");
     uint8_t read = i2c_reg_read(HAPTIC_MOTOR_ADDR, CHIP_REV_REG);
     // printf("done reading reg\n");
     // printf("WHOAMI: 0x%x\n", read);
-    if(read != WHOAMI_HAPTIC){
+    if (read != WHOAMI_HAPTIC) {
         return -1;
     }
-    //set mode to i2c - DRO(direct register overide) mode
+    // set mode to i2c - DRO(direct register overide) mode
     i2c_reg_write(HAPTIC_MOTOR_ADDR, TOP_CTL1, 1);
     // printf("haptic init done, returning now\n");
     return 0;
 }
 
-int haptic_config(h_config_t conf){
+int haptic_config(h_config_t conf) {
     i2c_reg_write(HAPTIC_MOTOR_ADDR, TOP_CTL2, 0x1F);
     return 0;
 }
@@ -37,29 +37,28 @@ int haptic_start() {
     return 0;
 }
 
-void haptic_stop(){
+void haptic_stop() {
     // i2c_write_by_bit(HAPTIC_MOTOR_ADDR, TOP_CTL1, 0, 4, 1);
     top_ctl1_saved = i2c_reg_read(HAPTIC_MOTOR_ADDR, TOP_CTL1);
     i2c_reg_write(HAPTIC_MOTOR_ADDR, TOP_CTL1, 0);
+    printf("stopped\n");
 }
 
-int haptic_resume(){
+int haptic_resume() {
     i2c_reg_write(HAPTIC_MOTOR_ADDR, TOP_CTL1, top_ctl1_saved);
     return 0;
 }
 
-//use app timer
-int haptic_timed(uint32_t ms){
-    //setup timer here, haptic_stop should be the interrupt handler - need anything else?
-    app_timer_create(&timer, APP_TIMER_MODE_SINGLE_SHOT, haptic_stop);
-    app_timer_start(timer, APP_TIMER_TICKS(ms), NULL);
-    if(first){
+// use app timer
+int haptic_timed(uint32_t ms) {
+    // setup timer here, haptic_stop should be the interrupt handler - need anything else?
+    if (first) {
         haptic_start();
         first = false;
-    }
-    else {
+    } else {
         haptic_resume();
     }
+    app_timer_create(&timer, APP_TIMER_MODE_SINGLE_SHOT, haptic_stop);
+    app_timer_start(timer, APP_TIMER_TICKS(ms), NULL);
     return 0;
 }
-

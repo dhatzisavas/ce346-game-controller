@@ -94,7 +94,7 @@ typedef struct h_config {
 
 // returns 0 if succesfully reads WHOAMI register
 // returns -1 otherwise
-int haptic_init(const app_timer_id_t *created_timer);
+int haptic_init(const app_timer_id_t created_timer);
 
 // configures haptic driver
 int haptic_config();

@@ -2,6 +2,10 @@ import serial
 import time
 import threading
 from enum import Enum
+import platform
+
+#may need to change port numher for windows
+PORT = 'COM6' if platform.system() == 'Windows' else '/dev/ttyACM0'
 
 class DEVS(Enum):
     JOYSTICK_X = 0
@@ -25,8 +29,6 @@ def getByte(byteStrInt: int, byteNum: int, byteLen: int) -> int:
 
 # array will be in same byte order as bytes were inserted. Big-endian byte ordering.
 # e.g. byte b'\x01\x02' => [0x01, 0x02]
-
-
 def byteToIntArr(byte: bytes) -> list:
     int_arr = []
     i = 0
@@ -40,8 +42,6 @@ def byteToIntArr(byte: bytes) -> list:
 
 # ensures input is valid as much as possible
 # button values should either be 0 (unpressed) or 1 (pressed)
-
-
 def validateInputArr(vals: list) -> bool:
     # no checks for first 2 values - anything in range is fine
     for i in range(2, len(vals)):
@@ -49,7 +49,7 @@ def validateInputArr(vals: list) -> bool:
             return False
     return True
 
-
+#iterates through list, returning the actual start of transmission for that set of data
 def findStart(val, old=0):
     map = []
     for i in range(len(val)):
@@ -64,7 +64,7 @@ def findStart(val, old=0):
     else:
         return map[1]
 
-
+#acceses array based on pre-determine start value - like circle queue (I think?)
 def accessArray(vals: list, start: int, ind: int):
     realInd = (ind + start) % len(vals)
     return vals[realInd]
@@ -76,7 +76,7 @@ def accessArray(vals: list, start: int, ind: int):
 # for i in vals:
 #     print(i)
 
-
+#Tests receiving raw inputs and ordering them
 def microbitTest():
     microbit = serial.Serial('/dev/ttyACM0', 38400)
     print(microbit.name)
@@ -94,7 +94,6 @@ def microbitTest():
         # maybe insert a delay here
         # or a way to trigger a software interrupt if the byte value is valid/makes sense
 
-# meant to run in a parallel context
 class MicrobitPolling:
 
     def __init__(self, message_size, print_time=0.25):
@@ -102,12 +101,15 @@ class MicrobitPolling:
         self.poll = True
         self.print = True
         self.time = print_time
-        self.microbit = serial.Serial('COM6', 38400)
-        self.microbitval = self.__readVal()
+        self.microbit = serial.Serial(PORT, 38400, timeout=.2)
         self.start = 0
+        self.drive = False
+        self.sleep = 0.05
+        self.microbitval = self.__readVal()
 
     def __readVal(self):
-        return byteToIntArr(self.microbit.read(self.size))
+        val = byteToIntArr(self.microbit.read(self.size))
+        return val
 
     def getSortedVals(self):
         start = self.start
@@ -115,26 +117,55 @@ class MicrobitPolling:
         i = self.start
         while i < start + self.size:
             sortedLst.append(self.microbitval[i % self.size])
-            i+=1
+            i += 1
         return sortedLst
 
+    #meant to be run in a parallel context
+    #only reads microbit inputs and updates stored value (self.microbitval)
     def readingValues(self):
         while (self.poll):
             self.microbitval = self.__readVal()
             self.start = findStart(self.microbitval, self.start)
         self.poll = True
 
+    #for testing - run in parallel to readingValues()
     def printingValues(self):
         while (self.print):
             time.sleep(self.time)
             print("start of values")
             for i in range(self.size):
-                print(accessArray(self.microbitval, self.start, i)) 
+                print(accessArray(self.microbitval, self.start, i))
             print("end of values")
         self.print = True
 
-    def driveHaptic(self):
-        self.microbit.write(int.to_bytes(0xFF))
+    #attempts to write char to microbit to start/not start haptic driver
+    #time of vibration is predetermined at 500ms
+    def driveHapticAutomatic(self):
+        while (True):
+            if self.drive:
+                print("writing yes")
+                self.microbit.write(int.to_bytes('a', 1, 'big'))
+                self.drive = False
+            else:
+                print("writing no")
+                self.microbit.write(int.to_bytes(0x00, 1, 'big'))
+
+    #merges readingValues() and driveHapticAutomatic()
+    #i thought this would resolve concurrency issues (both threads accessing Microbit at once)
+    def readAndDrive(self):
+        while (self.poll):
+            self.microbitval = self.__readVal()
+            self.start = findStart(self.microbitval, self.start)
+            if self.drive:
+                self.microbit.write(b'aaaaa');
+                self.drive = False
+            else:
+                self.microbit.write(int.to_bytes(0x00, 1, 'big'))
+            # if self.sleep != 0:
+            #     time.sleep(self.sleep)
+
+    def doDrive(self):
+        self.drive = True
 
     def stopPolling(self):
         self.poll = False
@@ -143,6 +174,7 @@ class MicrobitPolling:
         self.print = False
 
 
+#previous test code to be deleted once complete
 # global microbitval
 
 
@@ -174,8 +206,9 @@ class MicrobitPolling:
 #     print_mb_thread.join()
 #     print("You shouldn't have reached this point, but the functions have both ended")
 
+#prints out the values last captured by microbit - helper for testing
 def printv(microbit):
-    while(True):
+    while (True):
         lst = microbit.getSortedVals()
         print("start")
         for i in lst:
@@ -183,16 +216,28 @@ def printv(microbit):
         print("end")
         time.sleep(.05)
 
+
+# attempt to test out sending characters to microbit to start haptic driver
+# Failing
 def parallelTesting():
     MB = MicrobitPolling(6)
     print("making threads")
-    read_mb_thread = threading.Thread(target=MB.readingValues)
+    read_mb_thread = threading.Thread(target=MB.readAndDrive)
+    # drive_thread = threading.Thread(target=MB.driveHapticAutomatic)
     print_mb_thread = threading.Thread(target=printv, args=(MB,))
     print("starting")
     read_mb_thread.start()
     print_mb_thread.start()
+    print("here")
+    MB.doDrive()
+    print("did it once")
+    time.sleep(2000)
+    MB.doDrive()
+    print("both drives done")
+    # print_mb_thread.start()
     read_mb_thread.join()
     print_mb_thread.join()
     print("You shouldn't have reached this point, but the functions have both ended")
 
-# parallelTesting()
+
+parallelTesting()

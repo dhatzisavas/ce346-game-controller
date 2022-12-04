@@ -36,9 +36,7 @@ static volatile void read_in(){
 }
 
 void haptic_easy_time(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t polarity){
-    printf("HERE\n");
     haptic_timed(500);
-    printf("DONE\n");
 }
 
 int main() {
@@ -74,20 +72,22 @@ int main() {
     nrf_delay_ms(1000);
     //loop for reading and sending values
     while (1) {
-        printf("looping\n");
-        // char in = getchar();
-        // printf("0x%x\n", in);
-        // if(in == 0xCE){
-        //     haptic_timed(500);
-        // }
+        // printf("looping\n");
+        //code to try to take input for using haptic drive - hasn't worked
+        char in = getchar();
+        printf("0x%x\n", in);
+        if(in == 'a'){
+            printf("now\n");
+            haptic_timed(500);
+        }
         dev_values[0] = read_joystick_horizontal_low();
         dev_values[1] = read_joystick_vertical_low();
         dev_values[2] = read_button(buttons[0]);
         dev_values[3] = read_button(buttons[1]);
         dev_values[4] = read_button(buttons[2]);
         dev_values[5] = read_button(buttons[3]);
-        // OUTPUT_VALS(dev_vals);
-        nrf_delay_ms(100);
+        OUTPUT_VALS(dev_vals);
+        nrf_delay_ms(150);
         // printf("working\n");
     }
     printf("exiting\n");
