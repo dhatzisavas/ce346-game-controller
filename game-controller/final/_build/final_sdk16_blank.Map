@@ -203,6 +203,8 @@ Discarded input sections
  .text          0x0000000000000000        0x0 _build/game_main.o
  .data          0x0000000000000000        0x0 _build/game_main.o
  .bss           0x0000000000000000        0x0 _build/game_main.o
+ .bss.drive     0x0000000000000000        0x1 _build/game_main.o
+ .data.ready    0x0000000000000000        0x1 _build/game_main.o
  .text          0x0000000000000000        0x0 _build/haptic.o
  .data          0x0000000000000000        0x0 _build/haptic.o
  .bss           0x0000000000000000        0x0 _build/haptic.o

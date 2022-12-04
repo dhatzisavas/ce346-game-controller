@@ -15,6 +15,7 @@ uint8_t dev_values[6] = {0};
 
 bool drive = false;
 bool ready = true;
+bool stop = false;
 
 #define OUTPUT_VALS(x)      \
     putchar(dev_values[0]); \
@@ -24,14 +25,15 @@ bool ready = true;
     putchar(dev_values[4]); \
     putchar(dev_values[5])
 
-static volatile void read_in(){
-    char c = getChar();
-    if(c && ready){
-        drive = true;
-        ready = false;
-    }
-    else if (ready && !drive){
-        drive = false;
+static volatile void read_in(bool *drive, bool *ready, bool *stop) {
+    while (!(*stop)) {
+        char c = getchar();
+        if (c && *ready) {
+            *drive = true;
+            *ready = false;
+        } else if (*ready && !(*drive)) {
+            *drive = false;
+        }
     }
 }
 
@@ -62,6 +64,9 @@ int main() {
     printf("devices inited\n");
     haptic_config();
     haptic_timed(10000);
+    // check for haptic sensor - separate thread
+    pthread_t haptic_thread;
+    pthread_create(&haptic_thread, NULL, read_in, NULL);
     while (1) {
         // printf("looping\n");
         // char in = getchar();

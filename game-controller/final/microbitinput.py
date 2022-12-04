@@ -1,10 +1,17 @@
 import serial
 import time
 import threading
+from enum import Enum
+
+class DEVS(Enum):
+    JOYSTICK_X = 0
+    JOYSTICK_Y = 1
+    BUTTON_BLUE = 2
+    BUTTON_GREEN = 3
+    BUTTON_RED = 4
+    BUTTON_YELLOW = 5
 
 # most significant byte = index 0
-
-
 def getByte(byteStrInt: int, byteNum: int, byteLen: int) -> int:
     shift_size = 8 * (byteLen - byteNum - 1)
     mask = 0xFF
@@ -87,7 +94,7 @@ def microbitTest():
         # maybe insert a delay here
         # or a way to trigger a software interrupt if the byte value is valid/makes sense
 
-
+# meant to run in a parallel context
 class MicrobitPolling:
 
     def __init__(self, message_size, print_time=0.25):
@@ -106,6 +113,7 @@ class MicrobitPolling:
         while (self.poll):
             self.microbitval = self.readVal()
             self.start = findStart(self.microbitval, self.start)
+        self.poll = True
 
     def printingValues(self):
         while (self.print):
@@ -114,6 +122,7 @@ class MicrobitPolling:
             for i in range(self.size):
                 print(accessArray(self.microbitval, self.start, i)) 
             print("end of values")
+        self.print = True
 
     def stopPolling(self):
         self.poll = False
