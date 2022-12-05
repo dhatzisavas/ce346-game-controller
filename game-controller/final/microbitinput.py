@@ -102,7 +102,7 @@ class MicrobitPolling:
         self.poll = True
         self.print = True
         self.time = print_time
-        self.microbit = serial.Serial('/dev/ttyACM0', 38400)
+        self.microbit = serial.Serial('COM6', 38400)
         self.microbitval = self.__readVal()
         self.start = 0
 
@@ -192,3 +192,4 @@ def parallelTesting():
     print_mb_thread.join()
     print("You shouldn't have reached this point, but the functions have both ended")
 
+# parallelTesting()

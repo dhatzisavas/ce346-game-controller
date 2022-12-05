@@ -36,6 +36,7 @@ def work(microbit):
     while keep_working:
         vals = microbit.getSortedVals()
         gamepad.left_joystick_float(x_value_float=joystickToFloatX(vals[0], y_value_float=joystickToFloatY(vals[1])))
+        # TODO: finish this
         if(vals[2] == 1):
             gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
         
