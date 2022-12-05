@@ -8,21 +8,18 @@ app_timer_id_t timer;
 
 // returns 0 if whoami register matches expected value
 //-1 otherwise
-// what do we need to do for init? Turn on device? Config will be separate step
 int haptic_init(const app_timer_id_t created_timer) {
-    // printf("hapticinit starting\n");
     timer = created_timer;
+
     // checking whoami register
-    //  printf("reading reg\n");
     uint8_t read = i2c_reg_read(HAPTIC_MOTOR_ADDR, CHIP_REV_REG);
-    // printf("done reading reg\n");
-    // printf("WHOAMI: 0x%x\n", read);
     if (read != WHOAMI_HAPTIC) {
         return -1;
     }
+
     // set mode to i2c - DRO(direct register overide) mode
     i2c_reg_write(HAPTIC_MOTOR_ADDR, TOP_CTL1, 1);
-    // printf("haptic init done, returning now\n");
+    
     return 0;
 }
 
@@ -38,10 +35,9 @@ int haptic_start() {
 }
 
 void haptic_stop() {
-    // i2c_write_by_bit(HAPTIC_MOTOR_ADDR, TOP_CTL1, 0, 4, 1);
+    // hack to make sure it can resume later
     top_ctl1_saved = i2c_reg_read(HAPTIC_MOTOR_ADDR, TOP_CTL1);
     i2c_reg_write(HAPTIC_MOTOR_ADDR, TOP_CTL1, 0);
-    printf("stopped\n");
 }
 
 int haptic_resume() {
@@ -49,9 +45,8 @@ int haptic_resume() {
     return 0;
 }
 
-// use app timer
+// runs the haptic driver for a duration of ms, in milliseconds
 int haptic_timed(uint32_t ms) {
-    // setup timer here, haptic_stop should be the interrupt handler - need anything else?
     if (first) {
         haptic_start();
         first = false;

@@ -6,20 +6,25 @@ app_timer_id_t timer;
 
 uint32_t time = 100;
 
-void update_val();
-
 bool high_accuracy = true;
 
+void update_val();
+
+joystick_vals_t read_joystick_low();
+
+// high accuracy: 10 bits of precision, low is 8
 int joystick_init(const app_timer_id_t created_timer, bool high_accuracy_mode) {
     timer = created_timer;
+    high_accuracy = high_accuracy_mode;
+    
     uint8_t read = i2c_reg_read(JOYSTK, WHOAMI);
-    // printf("reg val: 0x%x\n", read);
     if (read != WHOAMI_VAL) {
         return -1;
     }
+
     app_timer_create(&timer, APP_TIMER_MODE_REPEATED, update_val);
     app_timer_start(timer, APP_TIMER_TICKS(time), NULL);
-    high_accuracy = high_accuracy_mode;
+
     return 0;
 }
 
@@ -31,8 +36,6 @@ joystick_vals_t read_joystick() {
 joystick_vals_t read_last_val() {
     return last_val;
 }
-
-joystick_vals_t read_joystick_low();
 
 void update_val() {
     if (high_accuracy) {
