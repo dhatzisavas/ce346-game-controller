@@ -36,7 +36,7 @@ static volatile void read_in(){
 }
 
 int main() {
-    // init once
+    // things to init once
     nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
     i2c_config.scl = EDGE_P19;
     i2c_config.sda = EDGE_P20;
@@ -51,7 +51,8 @@ int main() {
         printf("app timer didn't init right\n");
     }
     printf("all overall init done\n");
-    // device init
+    
+    // init individual devices
     for (int i = 0; i < num_buttons; i++) {
         init_button(buttons[i], NULL);  // todo: add callback
     }
@@ -61,18 +62,20 @@ int main() {
     joystick_init(&joystick_timer, false);
     printf("devices inited\n");
     haptic_config();
-    haptic_timed(10000);
+
+    //loop for reading and sending values
     while (1) {
         // printf("looping\n");
-        // char in = getchar();
-        // if(in == 'a'){
+        char in = getchar();
+        if(in == 0xFF){
+            haptic_timed(500);
+        }
         dev_values[0] = read_joystick_horizontal_low();
         dev_values[1] = read_joystick_vertical_low();
         dev_values[2] = read_button(buttons[0]);
         dev_values[3] = read_button(buttons[1]);
         dev_values[4] = read_button(buttons[2]);
         dev_values[5] = read_button(buttons[3]);
-        // }
         OUTPUT_VALS(dev_vals);
         nrf_delay_ms(100);
         // printf("working\n");

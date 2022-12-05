@@ -133,6 +133,9 @@ class MicrobitPolling:
             print("end of values")
         self.print = True
 
+    def driveHaptic(self):
+        self.microbit.write(int.to_bytes(0xFF))
+
     def stopPolling(self):
         self.poll = False
 
