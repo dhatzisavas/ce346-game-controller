@@ -16,6 +16,8 @@ uint8_t dev_values[6] = {0};
 bool drive = false;
 bool ready = true;
 
+char in_char = 0;
+
 // only 6 values; might as well unroll the loop
 // the weakness of C macros makes me miss lisp lol
 #define OUTPUT_VALS(x)      \
@@ -42,6 +44,10 @@ static volatile void read_in() {
 // gpiote handler to call haptic_timed()
 void haptic_easy_time(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t polarity) {
     haptic_timed(500);
+}
+
+static void alarm_handler(){
+    in_char = 0;
 }
 
 int main()
@@ -84,6 +90,7 @@ int main()
     nrf_delay_ms(1000);
 
     // loop for reading and sending values
+
     while (1) {
         // code to try to take input for using haptic drive - hasn't worked
         // char in = getchar();

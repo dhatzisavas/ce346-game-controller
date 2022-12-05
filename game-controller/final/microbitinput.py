@@ -116,7 +116,7 @@ class MicrobitPolling:
     def __readVal(self):
         val = byteToIntArr(self.microbit.read(self.size))
         if len(val) != 6:
-            return [0 * 6]
+            return [0] * 6
         return val
 
     def getSortedVals(self):
