@@ -101,7 +101,7 @@ int main()
 
         OUTPUT_VALS(dev_vals);
         
-        nrf_delay_ms(150);
+        // nrf_delay_ms(150);
     }
     //should never really hit this point
     printf("exiting\n");
