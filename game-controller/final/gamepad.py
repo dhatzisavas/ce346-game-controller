@@ -62,8 +62,6 @@ def work(microbit):
         gamepad.update()
         
 
-
-
 # allow threads to easily quit when SIGINT is received (ctrl + c)
 def sigintHandler(sig, frame):
     MB.stopPolling()

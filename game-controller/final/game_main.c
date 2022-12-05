@@ -92,6 +92,7 @@ int main()
     // loop for reading and sending values
 
     while (1) {
+        printf("looping\n");
         // code to try to take input for using haptic drive - hasn't worked
         // char in = getchar();
         // if (in == 'a') {
@@ -108,7 +109,7 @@ int main()
 
         OUTPUT_VALS(dev_vals);
         
-        // nrf_delay_ms(150);
+        nrf_delay_ms(50);
     }
     //should never really hit this point
     printf("exiting\n");
