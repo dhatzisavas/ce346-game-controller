@@ -44,7 +44,8 @@ void haptic_easy_time(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t polarity) {
     haptic_timed(500);
 }
 
-int main() {
+int main()
+{
     // things to init once
     nrf_drv_twi_config_t i2c_config = NRF_DRV_TWI_DEFAULT_CONFIG;
     i2c_config.scl = EDGE_P19;
@@ -55,15 +56,19 @@ int main() {
         printf("twi manager couldn't init\n");
         return -1;
     }
+
     i2c_init(twi_mngr_instance);
-    if (app_timer_init() != NRFX_SUCCESS) {
+
+    if (app_timer_init() != NRFX_SUCCESS)
+    {
         printf("app timer didn't init right\n");
         return -1;
     }
 
     // init individual devices
-    for (int i = 0; i < num_buttons; i++) {
-        init_button(buttons[i], haptic_easy_time);  // todo: add callback
+    for (int i = 0; i < num_buttons; i++)
+    {
+        init_button(buttons[i], haptic_easy_time);
     }
     
     joystick_init(joystick_timer, false);

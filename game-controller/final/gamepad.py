@@ -19,9 +19,9 @@ v_bottom_scale = float(V_MID_LOW)
 def joystickToFloatX(val):
     val -= H_MID_LOW
     if val >= 0:
-        return val / h_top_scale
+        return - val / h_top_scale
     else:
-        return val / h_bottom_scale
+        return - val / h_bottom_scale
 
 
 # converts 8-bit int to float for vertical values
@@ -41,10 +41,27 @@ gamepad = vg.VX360Gamepad()
 def work(microbit):
     while keep_working:
         vals = microbit.getSortedVals()
-        gamepad.left_joystick_float(x_value_float=joystickToFloatX(vals[0], y_value_float=joystickToFloatY(vals[1])))
+        gamepad.left_joystick_float(x_value_float=joystickToFloatX(vals[0]), y_value_float=joystickToFloatY(vals[1]))
         # TODO: finish this
         if (vals[2] == 1):
             gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
+        if(vals[3] == 1):
+            gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_B)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_B)
+        if(vals[4] == 1):
+            gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_X)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_X)
+        if(vals[5] == 1):
+            gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_Y)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_Y)
+        gamepad.update()
+        
+
 
 
 # allow threads to easily quit when SIGINT is received (ctrl + c)
