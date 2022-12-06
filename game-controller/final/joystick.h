@@ -31,14 +31,6 @@ enum POS_VALS {
     V_TOP_LOW = 255
 };
 
-enum DIRS {
-    NONE = 0,
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN
-};
-
 typedef struct joystick_vals {
     uint16_t horizontal;
     uint16_t vertical;

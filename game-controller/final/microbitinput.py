@@ -4,8 +4,9 @@ import threading
 from enum import Enum
 import platform
 
-#may need to change port numher for windows
+#may need to change port number for windows depending on system
 PORT = 'COM6' if platform.system() == 'Windows' else '/dev/ttyACM0'
+
 
 class DEVS(Enum):
     JOYSTICK_X = 0
@@ -15,17 +16,15 @@ class DEVS(Enum):
     BUTTON_RED = 4
     BUTTON_YELLOW = 5
 
+
 # most significant byte = index 0
 def getByte(byteStrInt: int, byteNum: int, byteLen: int) -> int:
     shift_size = 8 * (byteLen - byteNum - 1)
     mask = 0xFF
-    # print("mask: ", hex(mask));
     mask_placed = mask << shift_size
-    # print("mask placed: ", hex(mask_placed))
     val = byteStrInt & mask_placed
-    # print("val before shift right: ", hex(val))
-    # print("after shift: ", hex(val >> shift_size))
     return (val >> shift_size) & mask
+
 
 # array will be in same byte order as bytes were inserted. Big-endian byte ordering.
 # e.g. byte b'\x01\x02' => [0x01, 0x02]
@@ -34,20 +33,21 @@ def byteToIntArr(byte: bytes) -> list:
     i = 0
     byteInt = int.from_bytes(byte, 'big')
     bytelen = len(byte)
-    # print(bytelen)
     while i < bytelen:
-        int_arr.append(getByte(byteInt, i, bytelen))
+        int_arr.append(getByte(byteInt, i, bytelen)) #could this be done more efficiently? yes
         i += 1
     return int_arr
+
 
 # ensures input is valid as much as possible
 # button values should either be 0 (unpressed) or 1 (pressed)
 def validateInputArr(vals: list) -> bool:
-    # no checks for first 2 values - anything in range is fine
+    # no checks for first 2 values - anything in range is fine, and physically can't be out of range
     for i in range(2, len(vals)):
         if vals[i] != 0 or vals[i] != 1:
             return False
     return True
+
 
 #iterates through list, returning the actual start of transmission for that set of data
 def findStart(val, old=0):
@@ -58,16 +58,18 @@ def findStart(val, old=0):
     # if there are not exactly 2 elements identified as joystick, returns last known start val
     if len(map) != 2:
         return old
-    # are the sequential?
+    # are they sequential?
     if map[1] - map[0] == 1:
         return map[0]
     else:
         return map[1]
 
+
 #acceses array based on pre-determine start value - like circle queue (I think?)
 def accessArray(vals: list, start: int, ind: int):
     realInd = (ind + start) % len(vals)
     return vals[realInd]
+
 
 # #test
 # string = b'\x00\x01\x02\x03\x04\x05'
@@ -76,7 +78,9 @@ def accessArray(vals: list, start: int, ind: int):
 # for i in vals:
 #     print(i)
 
+
 #Tests receiving raw inputs and ordering them
+#used to understand features only
 def microbitTest():
     microbit = serial.Serial('/dev/ttyACM0', 38400)
     print(microbit.name)
@@ -94,6 +98,8 @@ def microbitTest():
         # maybe insert a delay here
         # or a way to trigger a software interrupt if the byte value is valid/makes sense
 
+#encapsulates all data and methods required to receive the desired data
+#from the microbit
 class MicrobitPolling:
 
     def __init__(self, message_size, print_time=0.25):
@@ -109,6 +115,8 @@ class MicrobitPolling:
 
     def __readVal(self):
         val = byteToIntArr(self.microbit.read(self.size))
+        if len(val) != 6:
+            return [0 * 6]
         return val
 
     def getSortedVals(self):
@@ -151,7 +159,8 @@ class MicrobitPolling:
                 self.microbit.write(int.to_bytes(0x00, 1, 'big'))
 
     #merges readingValues() and driveHapticAutomatic()
-    #i thought this would resolve concurrency issues (both threads accessing Microbit at once)
+    #i thought this would resolve concurrency issues (both threads accessing Microbit at once),
+    #assuming serial.read and serial.write are thread safe
     def readAndDrive(self):
         while (self.poll):
             self.microbitval = self.__readVal()
@@ -240,4 +249,4 @@ def parallelTesting():
     print("You shouldn't have reached this point, but the functions have both ended")
 
 
-parallelTesting()
+# parallelTesting()
