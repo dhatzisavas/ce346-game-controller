@@ -39,6 +39,21 @@ def work(microbit):
         # TODO: finish this
         if(vals[2] == 1):
             gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
+        if(vals[3] == 1):
+            gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_B)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_B)
+        if(vals[4] == 1):
+            gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_X)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_X)
+        if(vals[5] == 1):
+            gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_Y)
+        else:
+            gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_Y)
+        gamepad.update()
         
 
 
